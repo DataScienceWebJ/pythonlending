@@ -1,0 +1,161 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Применение Python</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-in-up { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        .fade-in-up.visible { opacity: 1; transform: translateY(0); }
+        .card { transition: transform 0.4s ease, box-shadow 0.4s ease, background-color 0.4s ease; }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3); background-color: #e0f2fe; }
+        .icon-spin { transition: transform 0.3s ease; }
+        .icon-spin:hover { transform: rotate(360deg); }
+        .img-zoom { transition: transform 0.5s ease; }
+        .img-zoom:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-gradient-to-r from-blue-600 to-green-500 text-white py-5 sticky top-0 z-20 shadow-xl">
+        <div class="container mx-auto flex justify-between items-center px-6">
+            <h1 class="text-3xl font-extrabold">Всё о Python</h1>
+            <ul class="flex space-x-8 text-lg">
+                <li><a href="index.html" class="hover:text-yellow-300 transition-colors">Главная</a></li>
+                <li><a href="about.html" class="hover:text-yellow-300 transition-colors">О Python</a></li>
+                <li><a href="applications.html" class="hover:text-yellow-300 transition-colors">Применение</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Applications Section -->
+    <section class="container mx-auto py-20 px-6">
+        <h2 class="text-4xl font-extrabold text-center mb-12 fade-in-up text-blue-800">Где используется Python?</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+            <div class="text-center fade-in-up">
+                <div class="bg-blue-100 p-4 rounded-full inline-block mb-4 icon-spin">
+                    <svg class="w-10 h-10 text-blue-700" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6zm2 2h8v2H6V8zm0 3h4v2H6v-2z"/></svg>
+                </div>
+                <h3 class="text-xl font-semibold text-blue-700">Веб-разработка</h3>
+                <p class="text-gray-700">Создавайте современные сайты с Django и Flask.</p>
+                <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Web Development" class="mx-auto mt-6 rounded-xl shadow-lg img-zoom">
+            </div>
+            <div class="text-center fade-in-up">
+                <div class="bg-green-100 p-4 rounded-full inline-block mb-4 icon-spin">
+                    <svg class="w-10 h-10 text-green-700" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 110-12 6 6 0 010 12zm-1-8H7v2h2v2h2v-2h2V8h-2V6H9v2z"/></svg>
+                </div>
+                <h3 class="text-xl font-semibold text-blue-700">Анализ данных</h3>
+                <p class="text-gray-700">Pandas и NumPy для обработки больших данных.</p>
+                <img src="https://images.unsplash.com/photo-1551288049-b1f3c3159933?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Data Analysis" class="mx-auto mt-6 rounded-xl shadow-lg img-zoom">
+            </div>
+            <div class="text-center fade-in-up">
+                <div class="bg-yellow-100 p-4 rounded-full inline-block mb-4 icon-spin">
+                    <svg class="w-10 h-10 text-yellow-700" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 01-6-6c0-1.5.6-2.9 1.7-4l1.4 1.4C6.4 8.3 6 9.1 6 10a4 4 0 008 0c0-.9-.4-1.7-1.1-2.6L14.3 6c1.1 1.1 1.7 2.5 1.7 4a6 6 0 01-6 6z"/></svg>
+                </div>
+                <h3 class="text-xl font-semibold text-blue-700">Машинное обучение</h3>
+                <p class="text-gray-700">TensorFlow и PyTorch для создания ИИ.</p>
+                <img src="https://images.unsplash.com/photo-1516321310766-61f6f9c7e43d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Machine Learning" class="mx-auto mt-6 rounded-xl shadow-lg img-zoom">
+            </div>
+            <div class="text-center fade-in-up">
+                <div class="bg-red-100 p-4 rounded-full inline-block mb-4 icon-spin">
+                    <svg class="w-10 h-10 text-red-700" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 01-6-6h2a4 4 0 008 0h2a6 6 0 01-6 6zm-2-8H6v2h2v2h4v-2h2V8h-2V6H8v2z"/></svg>
+                </div>
+                <h3 class="text-xl font-semibold text-blue-700">Автоматизация</h3>
+                <p class="text-gray-700">Скрипты для упрощения рутинных задач.</p>
+                <img src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Automation" class="mx-auto mt-6 rounded-xl shadow-lg img-zoom">
+            </div>
+        </div>
+
+        <!-- Libraries -->
+        <h3 class="text-3xl font-bold text-center mb-10 fade-in-up text-blue-800">Популярные библиотеки</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white p-8 rounded-xl shadow-lg card fade-in-up">
+                <div class="bg-blue-100 p-4 rounded-full inline-block mb-4 icon-spin">
+                    <svg class="w-8 h-8 text-blue-700" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6zm2 2h8v2H6V8zm0 3h4v2H6v-2z"/></svg>
+                </div>
+                <h4 class="text-xl font-semibold text-blue-700 mb-4">Django</h4>
+                <p class="text-gray-700">Фреймворк для быстрой и безопасной веб-разработки.</p>
+            </div>
+            <div class="bg-white p-8 rounded-xl shadow-lg card fade-in-up">
+                <div class="bg-green-100 p-4 rounded-full inline-block mb-4 icon-spin">
+                    <svg class="w-8 h-8 text-green-700" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 110-12 6 6 0 010 12zm-1-8H7v2h2v2h2v-2h2V8h-2V6H9v2z"/></svg>
+                </div>
+                <h4 class="text-xl font-semibold text-blue-700 mb-4">Pandas</h4>
+                <p class="text-gray-700">Инструмент для анализа и обработки данных.</p>
+            </div>
+            <div class="bg-white p-8 rounded-xl shadow-lg card fade-in-up">
+                <div class="bg-yellow-100 p-4 rounded-full inline-block mb-4 icon-spin">
+                    <svg class="w-8 h-8 text-yellow-700" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 01-6-6c0-1.5.6-2.9 1.7-4l1.4 1.4C6.4 8.3 6 9.1 6 10a4 4 0 008 0c0-.9-.4-1.7-1.1-2.6L14.3 6c1.1 1.1 1.7 2.5 1.7 4a6 6 0 01-6 6z"/></svg>
+                </div>
+                <h4 class="text-xl font-semibold text-blue-700 mb-4">TensorFlow</h4>
+                <p class="text-gray-700">Библиотека для машинного обучения и нейросетей.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-blue-600 to-green-500 text-white py-12">
+        <div class="container mx-auto text-center px-6">
+            <p class="text-xl">© 2025 Всё о Python. Яркий мир программирования!</p>
+            <p class="mt-3">Официальный сайт: <a href="https://www.python.org" class="underline hover:text-yellow-300">python.org</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // Animation on scroll
+        document.addEventListener('DOMConten tLoaded', () => {
+            const elements = document.querySelectorAll('.fade-in-up');
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.classList.add('visible');
+                        }, index * 200);
+                    }
+                });
+            }, { threshold: 0.2 });
+            elements.forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>

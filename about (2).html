@@ -1,0 +1,166 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>О Python</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .card { transform: scale(0.95); transition: transform 0.4s ease, box-shadow 0.4s ease, background-color 0.4s ease; }
+        .card:hover { transform: scale(1); box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3); background-color: #e0f2fe; }
+        .fade-in-left { opacity: 0; transform: translateX(-40px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        .fade-in-left.visible { opacity: 1; transform: translateX(0); }
+        .icon-spin { transition: transform 0.3s ease; }
+        .icon-spin:hover { transform: rotate(360deg); }
+        .img-zoom { transition: transform 0.5s ease; }
+        .img-zoom:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-gradient-to-r from-blue-600 to-green-500 text-white py-5 sticky top-0 z-20 shadow-xl">
+        <div class="container mx-auto flex justify-between items-center px-6">
+            <h1 class="text-3xl font-extrabold">Всё о Python</h1>
+            <ul class="flex space-x-8 text-lg">
+                <li><a href="index.html" class="hover:text-yellow-300 transition-colors">Главная</a></li>
+                <li><a href="about.html" class="hover:text-yellow-300 transition-colors">О Python</a></li>
+                <li><a href="applications.html" class="hover:text-yellow-300 transition-colors">Применение</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- About Section -->
+    <section class="container mx-auto py-20 px-6">
+        <h2 class="text-4xl font-extrabold text-center mb-12 fade-in-left text-blue-800">О Python</h2>
+        <div class="max-w-4xl mx-auto text-xl text-gray-800 mb-12 fade-in-left">
+            <p class="mb-8">Python — это язык программирования, созданный Гвидо ван Россумом в 1991 году. Его философия, изложенная в "Zen of Python", делает акцент на читаемости и простоте.</p>
+            <p class="mb-8">Сегодня Python — лидер среди языков программирования (TIOBE 2025), с сообществом более 10 миллионов разработчиков и активной поддержкой Python Software Foundation.</p>
+            <p>Название языка отсылает к комедийному шоу "Монти Пайтон", что подчеркивает его дружелюбный и творческий дух.</p>
+        </div>
+
+        <!-- Features -->
+        <h3 class="text-3xl font-bold text-center mb-10 fade-in-left text-blue-800">Преимущества Python</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <div class="bg-white p-8 rounded-xl shadow-lg card">
+                <div class="bg-blue-100 p-4 rounded-full inline-block mb-4 icon-spin">
+                    <svg class="w-8 h-8 text-blue-700" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 110-12 6 6 0 010 12zm-1-8H7v2h2v2h2v-2h2V8h-2V6H9v2z"/></svg>
+                </div>
+                <h4 class="text-xl font-semibold text-blue-700 mb-4">Читаемый синтаксис</h4>
+                <p>Код, понятный даже новичкам, ускоряет обучение и разработку.</p>
+            </div>
+            <div class="bg-white p-8 rounded-xl shadow-lg card">
+                <div class="bg-green-100 p-4 rounded-full inline-block mb-4 icon-spin">
+                    <svg class="w-8 h-8 text-green-700" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6zm2 2h8v2H6V8zm0 3h4v2H6v-2z"/></svg>
+                </div>
+                <h4 class="text-xl font-semibold text-blue-700 mb-4">Экосистема</h4>
+                <p>Более 400,000 библиотек на PyPI для любых задач.</p>
+            </div>
+            <div class="bg-white p-8 rounded-xl shadow-lg card">
+                <div class="bg-yellow-100 p-4 rounded-full inline-block mb-4 icon-spin">
+                    <svg class="w-8 h-8 text-yellow-700" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 01-6-6h2a4 4 0 008 0h2a6 6 0 01-6 6zm-2-8H6v2h2v2h4v-2h2V8h-2V6H8v2z"/></svg>
+                </div>
+                <h4 class="text-xl font-semibold text-blue-700 mb-4">Кроссплатформенность</h4>
+                <p>Работает на Windows, macOS, Linux и даже мобильных устройствах.</p>
+            </div>
+        </div>
+
+        <!-- Code Example -->
+        <h3 class="text-3xl font-bold text-center mb-10 fade-in-left text-blue-800">Пример кода</h3>
+        <div class="bg-gradient-to-r from-gray-800 to-gray-700 text-white p-8 rounded-xl max-w-3xl mx-auto fade-in-left shadow-2xl">
+            <pre><code># Простая программа для вычисления факториала
+def factorial(n):
+    if n == 0:
+        return 1
+    return n * factorial(n - 1)
+
+print(factorial(5))  # Вывод: 120
+</code></pre>
+        </div>
+
+        <!-- Stats -->
+        <h3 class="text-3xl font-bold text-center mb-10 mt-12 fade-in-left text-blue-800">Python в цифрах</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div class="fade-in-left">
+                <p class="text-5xl font-extrabold text-blue-700">1 место</p>
+                <p class="text-gray-700 text-lg">в рейтинге TIOBE 2025</p>
+            </div>
+            <div class="fade-in-left">
+                <p class="text-5xl font-extrabold text-green-600">400K+</p>
+                <p class="text-gray-700 text-lg">библиотек на PyPI</p>
+            </div>
+            <div class="fade-in-left">
+                <p class="text-5xl font-extrabold text-yellow-500">10M+</p>
+                <p class="text-gray-700 text-lg">разработчиков по всему миру</p>
+            </div>
+        </div>
+
+        <div class="text-center mt-12">
+            <img src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Python Coding" class="mx-auto rounded-xl shadow-2xl max-w-full h-auto img-zoom">
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-blue-600 to-green-500 text-white py-12">
+        <div class="container mx-auto text-center px-6">
+            <p class="text-xl">© 2025 Всё о Python. Яркий мир программирования!</p>
+            <p class="mt-3">Официальный сайт: <a href="https://www.python.org" class="underline hover:text-yellow-300">python.org</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // Animation on scroll
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = document.querySelectorAll('.fade-in-left');
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.classList.add('visible');
+                        }, index * 200);
+                    }
+                });
+            }, { threshold: 0.2 });
+            elements.forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>

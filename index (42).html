@@ -1,0 +1,117 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Всё о Python - Главная</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-in { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+        .parallax { background-attachment: fixed; background-position: center; background-size: cover; }
+        .btn-hover { transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; }
+        .btn-hover:hover { transform: scale(1.1); background-color: #ef4444; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); }
+        .img-zoom { transition: transform 0.5s ease; }
+        .img-zoom:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-gradient-to-r from-blue-600 to-green-500 text-white py-5 sticky top-0 z-20 shadow-xl">
+        <div class="container mx-auto flex justify-between items-center px-6">
+            <h1 class="text-3xl font-extrabold">Всё о Python</h1>
+            <ul class="flex space-x-8 text-lg">
+                <li><a href="index.html" class="hover:text-yellow-300 transition-colors">Главная</a></li>
+                <li><a href="about.html" class="hover:text-yellow-300 transition-colors">О Python</a></li>
+                <li><a href="applications.html" class="hover:text-yellow-300 transition-colors">Применение</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="bg-gradient-to-br from-blue-600 via-green-500 to-yellow-400 text-white py-28 parallax" style="background-image: url('https://images.unsplash.com/photo-1516321310766-61f6f9c7e43d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')">
+        <div class="container mx-auto text-center">
+            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 fade-in">Python: Яркий мир кода</h1>
+            <p class="text-2xl md:text-3xl max-w-3xl mx-auto fade-in">Погрузись в Python — язык, который вдохновляет миллионы на создание будущего!</p>
+            <img src="https://www.python.org/static/community_logos/python-logo-master-v3-TM.png" alt="Python Logo" class="mx-auto mt-10 w-48 animate-bounce">
+            <a href="about.html" class="inline-block mt-8 bg-red-500 text-white font-bold py-4 px-10 rounded-full btn-hover">Узнать больше</a>
+        </div>
+    </header>
+
+    <!-- Intro Section -->
+    <section class="container mx-auto py-20 px-6">
+        <h2 class="text-4xl font-extrabold text-center mb-12 fade-in text-blue-800">Почему Python?</h2>
+        <div class="max-w-4xl mx-auto text-xl text-gray-800 fade-in">
+            <p class="mb-8">Python — это язык, который делает программирование увлекательным и доступным. Его используют для создания сайтов, анализа данных, разработки ИИ и многого другого.</p>
+            <p>С Python ты можешь воплотить любую идею — от простых скриптов до сложных приложений.</p>
+        </div>
+        <div class="text-center mt-12">
+            <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Coding on Python" class="mx-auto rounded-xl shadow-2xl max-w-full h-auto img-zoom">
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-blue-600 to-green-500 text-white py-12">
+        <div class="container mx-auto text-center px-6">
+            <p class="text-xl">© 2025 Всё о Python. Яркий мир программирования!</p>
+            <p class="mt-3">Официальный сайт: <a href="https://www.python.org" class="underline hover:text-yellow-300">python.org</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // Animation on scroll
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = document.querySelectorAll('.fade-in');
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.classList.add('visible');
+                        }, index * 300);
+                    }
+                });
+            }, { threshold: 0.2 });
+            elements.forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>
